@@ -80,24 +80,17 @@ export function useBlowDetection(enabled: boolean) {
 
         const source = ctx.createMediaStreamSource(stream);
         const analyser = ctx.createAnalyser();
-        analyser.fftSize = 1024;
+        analyser.fftSize = 256;
         analyser.smoothingTimeConstant = 0.3;
         source.connect(analyser);
 
-        const timeData = new Float32Array(analyser.fftSize);
-        const freqData = new Uint8Array(analyser.frequencyBinCount);
-
-        const nyquist = ctx.sampleRate / 2;
-        const lowBandMaxBin = Math.max(
-          4,
-          Math.floor((1500 / nyquist) * analyser.frequencyBinCount)
-        );
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
 
         const calibrationStart = performance.now();
         const calibrationSamples: number[] = [];
-        let noiseFloor = 0.018;
+        let noiseFloor = 15;
         let calibrated = false;
-        let blowStreakStart: number | null = null;
         let lastFrameTime = performance.now();
 
         const processAudio = (now: number) => {
@@ -105,33 +98,16 @@ export function useBlowDetection(enabled: boolean) {
           const dt = Math.min(0.1, (now - lastFrameTime) / 1000);
           lastFrameTime = now;
 
-          analyser.getFloatTimeDomainData(timeData);
-          analyser.getByteFrequencyData(freqData);
-
-          let sumSquares = 0;
-          for (let i = 0; i < timeData.length; i++) {
-            sumSquares += timeData[i] * timeData[i];
-          }
-          const rms = Math.sqrt(sumSquares / timeData.length);
-
-          let lowBandEnergy = 0;
-          let totalEnergy = 1;
-          for (let i = 0; i < freqData.length; i++) {
-            const val = freqData[i];
-            totalEnergy += val;
-            if (i <= lowBandMaxBin) {
-              lowBandEnergy += val;
-            }
-          }
-          const lowFreqRatio = lowBandEnergy / totalEnergy;
+          analyser.getByteFrequencyData(dataArray);
+          const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
 
           if (!calibrated) {
-            calibrationSamples.push(rms);
+            calibrationSamples.push(avg);
             if (now - calibrationStart >= 950) {
-              const avgRms =
+              const avgNoise =
                 calibrationSamples.reduce((a, b) => a + b, 0) /
                 Math.max(1, calibrationSamples.length);
-              noiseFloor = Math.min(0.08, Math.max(0.012, avgRms));
+              noiseFloor = Math.max(12, avgNoise);
               calibrated = true;
               setMicStatus('listening');
             }
@@ -139,34 +115,21 @@ export function useBlowDetection(enabled: boolean) {
             return;
           }
 
-          const rmsThreshold = noiseFloor * 2.1 + 0.015;
-          const isBroadbandWind = lowFreqRatio > 0.42;
-          const isLoudEnough = rms > rmsThreshold;
+          // Blow threshold based on your working code adjusted for ambient baseline
+          const blowThreshold = noiseFloor + 18;
 
-          if (isLoudEnough && isBroadbandWind) {
-            const normalizedStrength = Math.min(
-              1,
-              (rms - rmsThreshold) / Math.max(0.08, noiseFloor * 4.5)
-            );
-            setBlowIntensity(0.35 + normalizedStrength * 0.65);
-
-            if (blowStreakStart === null) {
-              blowStreakStart = now;
-            }
-            const continuousBlowMs = now - blowStreakStart;
-
-            if (continuousBlowMs >= 250) {
-              addBlowEnergy(dt * (0.48 + normalizedStrength * 0.45));
-            }
+          if (avg > blowThreshold) {
+            const intensity = Math.min(1, (avg - blowThreshold) / 50);
+            setBlowIntensity(0.4 + intensity * 0.6);
+            addBlowEnergy(dt * (0.5 + intensity * 0.5));
           } else {
-            blowStreakStart = null;
             const currentIntensity = useSceneStore.getState().blowIntensity;
-            if (currentIntensity > 0.01) {
-              setBlowIntensity(currentIntensity * 0.84);
-            } else if (currentIntensity !== 0) {
+            if (currentIntensity > 0.02) {
+              setBlowIntensity(currentIntensity * 0.82);
+            } else {
               setBlowIntensity(0);
             }
-            noiseFloor = noiseFloor * 0.995 + Math.min(rms, noiseFloor) * 0.005;
+            noiseFloor = noiseFloor * 0.995 + Math.min(avg, noiseFloor) * 0.005;
           }
 
           const state = useSceneStore.getState();
@@ -187,18 +150,8 @@ export function useBlowDetection(enabled: boolean) {
 
     startMicAnalysis();
 
-    const handleVis = () => {
-      if (document.hidden && audioCtxRef.current?.state === 'running') {
-        audioCtxRef.current.suspend();
-      } else if (!document.hidden && audioCtxRef.current?.state === 'suspended') {
-        audioCtxRef.current.resume();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVis);
-
     return () => {
       isCancelled = true;
-      document.removeEventListener('visibilitychange', handleVis);
       cleanupMic();
     };
   }, [enabled, cleanupMic, setBlowIntensity, addBlowEnergy, setMicStatus]);
