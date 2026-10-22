@@ -88,10 +88,10 @@ export const CONTENT: BirthdayContent = {
   relationship: 'friend',
   tone: 'mix',
   candleCount: 5,
-  musicUrl: '${import.meta.env.BASE_URL}assets/music/bg.mp3',
+  musicUrl: `${import.meta.env.BASE_URL}assets/music/bg.mp3`,
 
   gate: {
-    badge: '24 • 10 • Interactive Edition ✨',
+    badge: '21 • 10 • Interactive Edition ✨',
     title: 'Hey Prachii, rukh zara...',
     subtitle: 'Headphones laga le! Isme sirf dekhna nahi hai—har screen pe kuch touch ya play karna hai.',
     cta: 'Tap karke shuru kar ✨',
@@ -129,7 +129,7 @@ export const CONTENT: BirthdayContent = {
         'Sach bataun toh uss din Maggi thodi kacchi thi, par teri gossip itni spicy thi ki pata hi nahi chala 🤫🍜',
       dateTag: 'Late Night Chronicles',
       imageUrl:
-        '${import.meta.env.BASE_URL}assets/photos/p1.JPG',
+        `${import.meta.env.BASE_URL}assets/photos/p1.JPG`,
       sticker: '🍜✨',
     },
     {
@@ -141,7 +141,7 @@ export const CONTENT: BirthdayContent = {
         'Tere khoon mein B+ nahi, chai daudta hai. Doctor ko bhi dikhaogi toh chai patti hi milegi ☕😂',
       dateTag: 'Chai Addict',
       imageUrl:
-        '${import.meta.env.BASE_URL}assets/photos/p2.JPG',
+        `${import.meta.env.BASE_URL}assets/photos/p2.JPG`,
       sticker: '📸💖',
     },
     {
@@ -153,7 +153,7 @@ export const CONTENT: BirthdayContent = {
         'Agli baar jab tu bole "left le lo", main bina soche right mud jaunga. 100% success rate guaranteed 🧭😜',
       dateTag: 'Lost Navigator',
       imageUrl:
-        '${import.meta.env.BASE_URL}assets/photos/p3.JPG',
+        `${import.meta.env.BASE_URL}assets/photos/p3.JPG`,
       sticker: '🗺️😂',
     },
     {
@@ -184,7 +184,7 @@ export const CONTENT: BirthdayContent = {
     cutTitle: 'Step 3: Ab Cake Kaat! 🔪',
     cutPrompt: 'Cake ke upar ungli swipe kar (ya niche button daba) pehla piece kaatne ke liye!',
     cutButtonCta: 'Slice the Birthday Cake 🍰',
-    celebrationHeadline: 'Yayyy! Happy 24nd, Panda! 🎉',
+    celebrationHeadline: 'Yayyy! Happy 24th, Panda! 🎉',
     celebrationSub: 'Teri saari wishes poori hon (even wo wali jo tu kisi ko nahi batati ✨)',
     nextCta: 'Ek Secret Envelope tere liye 💌',
   },
@@ -193,7 +193,7 @@ export const CONTENT: BirthdayContent = {
     envelopePrompt: 'Gold Wax Seal ko tap karke lifafa kholo ✨',
     salutation: 'Dearest Pandaaa,',
     paragraphs: [
-      'Sabse pehle toh—Happiest 24nd Birthday! Mujhe pata hai tu birthday pe thoda overthink karti hai, par aaj sirf khush rehne ka din hai.',
+      'Sabse pehle toh—Happiest 24th Birthday! Mujhe pata hai tu birthday pe thoda overthink karti hai, par aaj sirf khush rehne ka din hai.',
       'Pichle kuch saalon mein tune itni saari memories bana li hain ki kabhi-kabhi yakeen nahi hota. Tera har chhoti baat pe excited hona, bina bole samajh jaana jab mera mood off ho, aur wo non-stop bakbak—kabhi mat badalna.',
       'Life mein aage bohot saare naye chapters aayenge, par ek cheez pakki hai: chahe raat ke 2 baje rona ho ya kisi random achievement pe party karni ho, main hamesha ek call door milunga.',
       'Khush reh, chamakti reh, aur hamesha aisi hi thodi si pagal aur bohot saari pyari rehna.',
@@ -206,7 +206,7 @@ export const CONTENT: BirthdayContent = {
   },
 
   finale: {
-    badge: 'Happy 24nd Birthday 💖',
+    badge: 'Happy 24th Birthday 💖',
     headline: 'Keep Shining, Panda!',
     subtext:
       'Ab jaa aur apna asli cake kaat (aur mere liye bada wala piece bacha ke rakhna!). Have the most magical year ahead.',
